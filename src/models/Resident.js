@@ -3,7 +3,7 @@
  */
 export class Resident {
   constructor({
-    id,
+    id = null,
     firstName,
     lastName,
     address,
