@@ -137,51 +137,83 @@ export class ResidentRepository {
   }
 
   searchByName(searchTerm) {
-  const db = this.ownsDatabase
-    ? createDatabase(this.db)
-    : this.db;
+    const db = this.ownsDatabase
+      ? createDatabase(this.db)
+      : this.db;
 
-  try {
-    const statement = db.prepare(`
-      SELECT
-        id,
-        first_name,
-        last_name,
-        address,
-        contact_number,
-        email,
-        status
-      FROM residents
-      WHERE LOWER(first_name) LIKE LOWER(?)
-         OR LOWER(last_name) LIKE LOWER(?)
-      ORDER BY
-        LOWER(last_name) ASC,
-        LOWER(first_name) ASC,
-        id ASC
-    `);
+    try {
+      const statement = db.prepare(`
+        SELECT
+          id,
+          first_name,
+          last_name,
+          address,
+          contact_number,
+          email,
+          status
+        FROM residents
+        WHERE LOWER(first_name) LIKE LOWER(?)
+           OR LOWER(last_name) LIKE LOWER(?)
+        ORDER BY
+          LOWER(last_name) ASC,
+          LOWER(first_name) ASC,
+          id ASC
+      `);
 
-    const pattern = `%${searchTerm}%`;
+      const pattern = `%${searchTerm}%`;
 
-    const rows = statement.all(
-      pattern,
-      pattern
-    );
+      const rows = statement.all(
+        pattern,
+        pattern
+      );
 
-    return rows.map((row) =>
-      new Resident({
-        id: Number(row.id),
-        firstName: row.first_name,
-        lastName: row.last_name,
-        address: row.address,
-        contactNumber: row.contact_number,
-        email: row.email,
-        status: row.status
-      })
-    );
-  } finally {
-    if (this.ownsDatabase) {
-      db.close();
+      return rows.map(
+        (row) => this._mapRowToResident(row)
+      );
+    } finally {
+      if (this.ownsDatabase) {
+        db.close();
+      }
     }
   }
-}
+
+  update(resident) {
+    const db = this.ownsDatabase
+      ? createDatabase(this.db)
+      : this.db;
+
+    try {
+      const statement = db.prepare(`
+        UPDATE residents
+        SET
+          first_name = ?,
+          last_name = ?,
+          address = ?,
+          contact_number = ?,
+          email = ?
+        WHERE id = ?
+      `);
+
+      const result = statement.run(
+        resident.firstName,
+        resident.lastName,
+        resident.address,
+        resident.contactNumber,
+        resident.email,
+        resident.id
+      );
+
+      if (Number(result.changes) === 0) {
+        return null;
+      }
+
+      return this.findById(
+        resident.id
+      );
+    } finally {
+      if (this.ownsDatabase) {
+        db.close();
+      }
+    }
+  }
 }
