@@ -216,4 +216,52 @@ export class ResidentRepository {
       }
     }
   }
+
+  deactivateById(residentId) {
+  const db = this.ownsDatabase
+    ? createDatabase(this.db)
+    : this.db;
+
+  try {
+    const statement = db.prepare(`
+      UPDATE residents
+      SET status = ?
+      WHERE id = ?
+    `);
+
+    const result = statement.run(
+      "Inactive",
+      residentId
+    );
+
+    if (Number(result.changes) === 0) {
+      return null;
+    }
+
+    const selectStatement = db.prepare(`
+      SELECT
+        id,
+        first_name,
+        last_name,
+        address,
+        contact_number,
+        email,
+        status
+      FROM residents
+      WHERE id = ?
+    `);
+
+    const row = selectStatement.get(residentId);
+
+    if (!row) {
+      return null;
+    }
+
+    return this._mapRowToResident(row);
+  } finally {
+    if (this.ownsDatabase) {
+      db.close();
+    }
+  }
+}
 }
