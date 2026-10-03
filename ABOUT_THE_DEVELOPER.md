@@ -5,16 +5,16 @@ Complete this file during Sprint 0.
 ## Student Information
 
 **Full Name:**  
-`Enter your full name`
+Azra Raphael T. Prugalidad
 
 **Student Number:**  
-`Enter your student number`
+23-1328-567
 
 **Section:**  
-`Enter your section`
+J4A
 
 **GitHub Username:**  
-`Enter your GitHub username`
+howdoicode578
 
 **Primary Technology Stack:**  
 JavaScript with Express.js
@@ -23,30 +23,30 @@ JavaScript with Express.js
 
 Briefly describe your current programming experience.
 
-`Write your answer here.`
+I have beginner and amateur programming experience with Javascript. However, I have successfully created a MERN stack in my 3rd year with few problems regarding MongoDB.
 
 ## Learning Goal
 
 What do you want to learn or improve during this course?
 
-`Write your answer here.`
+My overall general skill in using Javascript, especially MERN Stacks.
 
 ## Development Environment
 
 **Operating System:**  
-`Enter your operating system`
+Windows 11
 
 **Node.js Version:**  
-`Enter the output of node --version`
+v25.1.0
 
 **npm Version:**  
-`Enter the output of npm --version`
+11.6.2
 
 **VS Code Installed:**  
-`Yes or No`
+Yes
 
 ## Academic Integrity Confirmation
 
-- [ ] I completed this profile using my own information.
-- [ ] I understand that I must be able to explain all work I submit.
-- [ ] I will disclose outside and AI assistance when required.
+- [/] I completed this profile using my own information.
+- [/] I understand that I must be able to explain all work I submit.
+- [/] I will disclose outside and AI assistance when required.
