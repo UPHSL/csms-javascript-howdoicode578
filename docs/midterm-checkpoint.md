@@ -77,6 +77,10 @@ Added the automated T10 test suite covering all required valid transitions, inva
 
 ## Required Section 5 - Problem I Encountered
 
+<<<<<<< HEAD
+=======
+One implementation problem I encountered was that the existing T09 ServiceRequestRepository could retrieve and save Service Requests but did not yet have a method for changing the persisted status. T10 required status management to operate on the real Service Request persistence rather than on temporary objects or arrays. I investigated the existing repository and found that findById() was already available and correctly mapped database rows into ServiceRequest objects, but there was no persistence operation specifically for updating status. I resolved this by extending the repository with an updateStatusById() method that performs a targeted SQL update using the Service Request ID. The method updates only the status column and then calls findById() to retrieve the final persisted record. This allowed the T10 service to enforce transition rules before persistence while keeping the database update limited to valid status changes.
+>>>>>>> d968910aff79a59fd2d8f504f4335dd9a5f8c2f8
 
 ---
 
