@@ -1,3 +1,4 @@
+
 /**
  * Service Request persistence repository.
  */
@@ -51,8 +52,7 @@ export class ServiceRequestRepository {
       serviceRequest.status
     );
 
-    const generatedId =
-      Number(result.lastInsertRowid);
+    const generatedId = Number(result.lastInsertRowid);
 
     serviceRequest.id = generatedId;
 
@@ -81,6 +81,149 @@ export class ServiceRequestRepository {
     return this._mapRowToServiceRequest(row);
   }
 
+  /**
+   * Retrieves all Service Requests in the required order.
+   */
+  findAll() {
+    const statement = this.db.prepare(`
+      SELECT
+        id,
+        resident_id,
+        service_type,
+        description,
+        date_requested,
+        status
+      FROM service_requests
+      ORDER BY date_requested DESC, id DESC
+    `);
+
+    return statement.all().map((row) =>
+      this._mapRowToServiceRequest(row)
+    );
+  }
+
+  /**
+   * Searches service type and description using a
+   * case-insensitive partial match.
+   */
+  searchByText(searchTerm) {
+    const normalizedTerm = String(searchTerm).trim();
+
+    if (normalizedTerm.length === 0) {
+      return this.findAll();
+    }
+
+    // Escape SQL LIKE wildcards so they are treated literally.
+    const escapedTerm = normalizedTerm.replace(
+      /[\\%_]/g,
+      "\\$&"
+    );
+
+    const pattern = `%${escapedTerm}%`;
+
+    const statement = this.db.prepare(`
+      SELECT
+        id,
+        resident_id,
+        service_type,
+        description,
+        date_requested,
+        status
+      FROM service_requests
+      WHERE
+        service_type LIKE ? ESCAPE '\\'
+        COLLATE NOCASE
+        OR description LIKE ? ESCAPE '\\'
+        COLLATE NOCASE
+      ORDER BY date_requested DESC, id DESC
+    `);
+
+    return statement.all(pattern, pattern).map((row) =>
+      this._mapRowToServiceRequest(row)
+    );
+  }
+
+  /**
+   * Retrieves Service Requests matching an exact status.
+   */
+  findByStatus(status) {
+    const statement = this.db.prepare(`
+      SELECT
+        id,
+        resident_id,
+        service_type,
+        description,
+        date_requested,
+        status
+      FROM service_requests
+      WHERE status = ?
+      ORDER BY date_requested DESC, id DESC
+    `);
+
+    return statement.all(status).map((row) =>
+      this._mapRowToServiceRequest(row)
+    );
+  }
+
+  /**
+   * Combines text search and status filtering in SQLite.
+   * Both filters must match when both are provided.
+   */
+  findByFilters({ searchTerm = "", status = null } = {}) {
+    const normalizedTerm =
+      typeof searchTerm === "string"
+        ? searchTerm.trim()
+        : "";
+
+    const conditions = [];
+    const parameters = [];
+
+    if (normalizedTerm.length > 0) {
+      const escapedTerm = normalizedTerm.replace(
+        /[\\%_]/g,
+        "\\$&"
+      );
+
+      const pattern = `%${escapedTerm}%`;
+
+      conditions.push(`
+        (
+          service_type LIKE ? ESCAPE '\\' COLLATE NOCASE
+          OR description LIKE ? ESCAPE '\\' COLLATE NOCASE
+        )
+      `);
+
+      parameters.push(pattern, pattern);
+    }
+
+    if (status !== null && status !== undefined) {
+      conditions.push("status = ?");
+      parameters.push(status);
+    }
+
+    const whereClause =
+      conditions.length > 0
+        ? `WHERE ${conditions.join(" AND ")}`
+        : "";
+
+    const statement = this.db.prepare(`
+      SELECT
+        id,
+        resident_id,
+        service_type,
+        description,
+        date_requested,
+        status
+      FROM service_requests
+      ${whereClause}
+      ORDER BY date_requested DESC, id DESC
+    `);
+
+    return statement.all(...parameters).map((row) =>
+      this._mapRowToServiceRequest(row)
+    );
+  }
+
   updateStatusById(serviceRequestId, status) {
     const statement = this.db.prepare(`
       UPDATE service_requests
@@ -88,10 +231,7 @@ export class ServiceRequestRepository {
       WHERE id = ?
     `);
 
-    const result = statement.run(
-      status,
-      serviceRequestId
-    );
+    const result = statement.run(status, serviceRequestId);
 
     if (Number(result.changes) === 0) {
       return null;
