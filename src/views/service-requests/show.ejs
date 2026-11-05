@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Service Request Details</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/style.css"
+  >
+</head>
+
+<body>
+  <main class="management-container">
+    <header class="page-header">
+      <div>
+        <h1>Service Request Details</h1>
+
+        <p class="muted-text">
+          Review the complete information for this request.
+        </p>
+      </div>
+    </header>
+
+    <% if (message) { %>
+      <div class="alert alert-success">
+        <%= message %>
+      </div>
+    <% } %>
+
+    <% if (errorMessage) { %>
+      <div class="alert alert-error">
+        <%= errorMessage %>
+      </div>
+    <% } %>
+
+    <section class="management-card details-card">
+      <dl class="details">
+        <div>
+          <dt>Request ID</dt>
+          <dd><%= serviceRequest.id %></dd>
+        </div>
+
+        <div>
+          <dt>Resident ID</dt>
+          <dd><%= serviceRequest.residentId %></dd>
+        </div>
+
+        <div>
+          <dt>Service Type</dt>
+          <dd><%= serviceRequest.serviceType %></dd>
+        </div>
+
+        <div>
+          <dt>Description</dt>
+          <dd><%= serviceRequest.description %></dd>
+        </div>
+
+        <div>
+          <dt>Date Requested</dt>
+          <dd><%= serviceRequest.dateRequested %></dd>
+        </div>
+
+        <div>
+          <dt>Current Status</dt>
+          <dd>
+            <span class="status-badge <%= serviceRequest.status.toLowerCase().replace(/\s+/g, '-') %>">
+              <%= serviceRequest.status %>
+            </span>
+          </dd>
+        </div>
+      </dl>
+
+      <div class="workflow-actions">
+        <h2>Workflow Actions</h2>
+
+        <% if (serviceRequest.status === "Pending") { %>
+          <form
+            method="POST"
+            action="/service-requests/<%= serviceRequest.id %>/start"
+          >
+            <button
+              class="button button-primary"
+              type="submit"
+            >
+              Start Processing
+            </button>
+          </form>
+
+          <form
+            method="POST"
+            action="/service-requests/<%= serviceRequest.id %>/cancel"
+          >
+            <button
+              class="button button-danger"
+              type="submit"
+            >
+              Cancel Request
+            </button>
+          </form>
+
+        <% } else if (serviceRequest.status === "In Progress") { %>
+          <form
+            method="POST"
+            action="/service-requests/<%= serviceRequest.id %>/complete"
+          >
+            <button
+              class="button button-primary"
+              type="submit"
+            >
+              Complete Request
+            </button>
+          </form>
+
+          <form
+            method="POST"
+            action="/service-requests/<%= serviceRequest.id %>/cancel"
+          >
+            <button
+              class="button button-danger"
+              type="submit"
+            >
+              Cancel Request
+            </button>
+          </form>
+
+        <% } else { %>
+          <p class="muted-text">
+            This Service Request is in a terminal status.
+            No further workflow actions are available.
+          </p>
+        <% } %>
+      </div>
+
+      <div class="form-actions">
+        <a
+          class="button button-secondary"
+          href="/service-requests"
+        >
+          Back to Service Requests
+        </a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
