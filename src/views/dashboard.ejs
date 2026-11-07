@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>CSMS Dashboard</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/style.css"
+  >
+</head>
+
+<body>
+  <main class="management-container">
+
+    <header class="page-header">
+      <div>
+        <p class="label">
+          Community Services Management System
+        </p>
+
+        <h1>CSMS Dashboard</h1>
+
+        <p class="muted-text">
+          Overview of residents and Service Request operations.
+        </p>
+      </div>
+
+      <nav class="header-actions">
+        <a
+          class="button button-primary"
+          href="/residents"
+        >
+          Residents
+        </a>
+
+        <a
+          class="button button-secondary"
+          href="/service-requests"
+        >
+          Service Requests
+        </a>
+      </nav>
+    </header>
+
+    <!-- Resident Summary -->
+    <section class="dashboard-section">
+      <h2>Resident Summary</h2>
+
+      <div class="dashboard-grid">
+
+        <article class="dashboard-card">
+          <p class="dashboard-label">
+            Total Residents
+          </p>
+
+          <p
+            class="dashboard-value"
+            data-testid="total-residents"
+          >
+            <%= residentSummary.total %>
+          </p>
+        </article>
+
+        <article class="dashboard-card">
+          <p class="dashboard-label">
+            Active Residents
+          </p>
+
+          <p
+            class="dashboard-value dashboard-active"
+            data-testid="active-residents"
+          >
+            <%= residentSummary.active %>
+          </p>
+        </article>
+
+        <article class="dashboard-card">
+          <p class="dashboard-label">
+            Inactive Residents
+          </p>
+
+          <p
+            class="dashboard-value dashboard-inactive"
+            data-testid="inactive-residents"
+          >
+            <%= residentSummary.inactive %>
+          </p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Service Request Summary -->
+    <section class="dashboard-section">
+      <h2>Service Request Summary</h2>
+
+      <div class="dashboard-grid">
+
+        <article class="dashboard-card">
+          <p class="dashboard-label">
+            Total Service Requests
+          </p>
+
+          <p
+            class="dashboard-value"
+            data-testid="total-requests"
+          >
+            <%= serviceRequestSummary.total %>
+          </p>
+        </article>
+
+        <article class="dashboard-card">
+          <p class="dashboard-label">
+            Pending
+          </p>
+
+          <p
+            class="dashboard-value dashboard-pending"
+            data-testid="pending-requests"
+          >
+            <%= serviceRequestSummary.pending %>
+          </p>
+        </article>
+
+        <article class="dashboard-card">
+          <p class="dashboard-label">
+            In Progress
+          </p>
+
+          <p
+            class="dashboard-value dashboard-progress"
+            data-testid="in-progress-requests"
+          >
+            <%= serviceRequestSummary.inProgress %>
+          </p>
+        </article>
+
+        <article class="dashboard-card">
+          <p class="dashboard-label">
+            Completed
+          </p>
+
+          <p
+            class="dashboard-value dashboard-completed"
+            data-testid="completed-requests"
+          >
+            <%= serviceRequestSummary.completed %>
+          </p>
+        </article>
+
+        <article class="dashboard-card">
+          <p class="dashboard-label">
+            Cancelled
+          </p>
+
+          <p
+            class="dashboard-value dashboard-cancelled"
+            data-testid="cancelled-requests"
+          >
+            <%= serviceRequestSummary.cancelled %>
+          </p>
+        </article>
+
+        <article class="dashboard-card dashboard-open-card">
+          <p class="dashboard-label">
+            Open Service Requests
+          </p>
+
+          <p
+            class="dashboard-value"
+            data-testid="open-requests"
+          >
+            <%= serviceRequestSummary.open %>
+          </p>
+
+          <p class="muted-text">
+            Pending + In Progress
+          </p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Recent Service Requests -->
+    <section class="dashboard-section">
+      <h2>Recent Service Requests</h2>
+
+      <div class="card management-card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Request ID</th>
+                <th>Resident ID</th>
+                <th>Service Type</th>
+                <th>Date Requested</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <% if (recentServiceRequests.length === 0) { %>
+                <tr>
+                  <td
+                    colspan="6"
+                    class="empty-message"
+                  >
+                    No Service Requests available.
+                  </td>
+                </tr>
+              <% } else { %>
+
+                <% recentServiceRequests.forEach((serviceRequest) => { %>
+                  <tr>
+                    <td><%= serviceRequest.id %></td>
+
+                    <td><%= serviceRequest.residentId %></td>
+
+                    <td><%= serviceRequest.serviceType %></td>
+
+                    <td><%= serviceRequest.dateRequested %></td>
+
+                    <td>
+                      <span class="status-badge <%= serviceRequest.status.toLowerCase().replace(/\s+/g, '-') %>">
+                        <%= serviceRequest.status %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <a
+                        class="button button-secondary button-small"
+                        href="/service-requests/<%= serviceRequest.id %>"
+                      >
+                        View
+                      </a>
+                    </td>
+                  </tr>
+                <% }); %>
+
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="record-count">
+          Recent Service Requests displayed:
+          <strong><%= recentServiceRequests.length %></strong>
+        </p>
+
+        <a
+          class="button button-primary"
+          href="/service-requests"
+        >
+          View All Service Requests
+        </a>
+      </div>
+    </section>
+
+    <p>
+      <a href="/" class="back-link">
+        Back to Home
+      </a>
+    </p>
+
+  </main>
+</body>
+</html>

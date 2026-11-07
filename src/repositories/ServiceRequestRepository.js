@@ -248,4 +248,57 @@ export class ServiceRequestRepository {
 
     return Number(statement.get().count);
   }
+
+    /**
+   * Counts all persisted Service Requests.
+   */
+  countAllServiceRequests() {
+    const statement = this.db.prepare(`
+      SELECT COUNT(*) AS count
+      FROM service_requests
+    `);
+
+    return Number(statement.get().count);
+  }
+
+  /**
+   * Counts Service Requests matching an exact status.
+   */
+  countServiceRequestsByStatus(status) {
+    const statement = this.db.prepare(`
+      SELECT COUNT(*) AS count
+      FROM service_requests
+      WHERE status = ?
+    `);
+
+    return Number(statement.get(status).count);
+  }
+
+  /**
+   * Retrieves the most recent Service Requests.
+   * Ordering matches the existing T11 query behavior.
+   */
+  findRecentServiceRequests(limit = 5) {
+    const normalizedLimit =
+      Number.isInteger(Number(limit)) && Number(limit) >= 0
+        ? Number(limit)
+        : 5;
+
+    const statement = this.db.prepare(`
+      SELECT
+        id,
+        resident_id,
+        service_type,
+        description,
+        date_requested,
+        status
+      FROM service_requests
+      ORDER BY date_requested DESC, id DESC
+      LIMIT ?
+    `);
+
+    return statement.all(normalizedLimit).map((row) =>
+      this._mapRowToServiceRequest(row)
+    );
+  }
 }
