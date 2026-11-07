@@ -23,11 +23,16 @@ import ServiceRequestStatusService from "./services/ServiceRequestStatusService.
 
 import { ServiceRequestValidator } from "./services/ServiceRequestValidator.js";
 
+import DashboardQueryService from "./services/DashboardQueryService.js";
+
 import { createResidentController } from "./controllers/residentController.js";
 import { createResidentRouter } from "./routes/residents.js";
 
 import { createServiceRequestController } from "./controllers/serviceRequestController.js";
 import { createServiceRequestRouter } from "./routes/serviceRequests.js";
+
+import { createDashboardController } from "./controllers/dashboardController.js";
+import { createDashboardRouter } from "./routes/dashboard.js";
 
 const currentFile = fileURLToPath(import.meta.url);
 const currentDirectory = path.dirname(currentFile);
@@ -101,6 +106,18 @@ export function createApp(options = {}) {
       statusService: serviceRequestStatusService
     });
 
+  // Dashboard read-only query service.
+  const dashboardQueryService =
+    new DashboardQueryService(
+      repository,
+      serviceRequestRepository
+    );
+
+  const dashboardController =
+    createDashboardController({
+      dashboardQueryService
+    });
+
   app.disable("x-powered-by");
 
   app.set(
@@ -122,6 +139,10 @@ export function createApp(options = {}) {
   );
 
   app.use(mainRoutes);
+
+  app.use(
+    createDashboardRouter(dashboardController)
+  );
 
   app.use(createResidentRouter(residentController));
 
