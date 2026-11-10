@@ -1,5 +1,5 @@
 {
-  "name": "csms-javascript-template",
+  "name": "csms-javascript-howdoicode578",
   "version": "0.1.0",
   "private": true,
   "description": "JavaScript and Express.js implementation of the Community Services Management System",
@@ -12,7 +12,7 @@
     "test:watch": "node --test --watch"
   },
   "engines": {
-    "node": ">=24 <25",
+    "node": ">=26 <27",
     "npm": ">=11"
   },
   "keywords": [

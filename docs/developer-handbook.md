@@ -1,161 +1,146 @@
-Development Rule
 
-Implement only the requirements included in the current ticket.
+# CSMS Developer Handbook
 
-The template establishes the application structure but intentionally leaves
-future business functionality incomplete.
+## Technology Stack
 
-
----
-
-## Step 7.5: Add `docs/architecture.md`
-
-```markdown
-# JavaScript Express Application Architecture
-
-## Overview
-
-The JavaScript implementation uses Express.js and ES modules.
-
-The architecture separates HTTP routing, request handling, business logic,
-persistence, domain models, views, and reusable supporting functions.
-
-## Structure
-
-```text
-src/
-├── app.js
-├── server.js
-├── config/
-├── controllers/
-├── middleware/
-├── models/
-├── repositories/
-├── routes/
-├── services/
-├── utils/
-└── views/
-
-public/
-└── css/
-
-test/
-Responsibilities
-app.js
-
-Creates and configures the Express application.
-
-server.js
-
-Starts the HTTP server.
-
-config
-
-Contains shared application and server configuration.
-
-routes
-
-Maps HTTP paths to controller functions.
-
-controllers
-
-Handles Express requests and responses.
-
-services
-
-Contains application and business logic.
-
-repositories
-
-Contains persistence and data-access responsibilities.
-
-models
-
-Represents CSMS domain concepts.
-
-middleware
-
-Contains reusable request-processing behavior.
-
-utils
-
-Contains small reusable supporting functions.
-
-views
-
-Contains EJS templates.
-
-public
-
-Contains browser-accessible static assets.
-
-test
-
-Contains automated application tests.
-
-Request Flow
-HTTP Request
-     ↓
-Express Route
-     ↓
-Controller
-     ↓
-Service
-     ↓
-Repository
-     ↓
-Model / Data Source
-     ↓
-HTTP Response or EJS View
-
-Not every ticket will require every layer.
-
-Students should preserve clear responsibilities without adding unnecessary
-complexity.
-
-Current Endpoints
-GET /
-GET /health
-
-Unknown routes return HTTP 404.
-
-Starter Scope
-
-Do not implement resident CRUD, persistence, authentication, external APIs, or
-other future functionality before the corresponding ticket is released.
-
-
----
-
-## Step 7.6: Add `docs/developer-handbook.md`
-
-```markdown
-# JavaScript Express Developer Handbook
-
-## Required Tools
-
-- Node.js 24 LTS
+- Node.js 24
 - npm
-- Git
-- GitHub
-- Visual Studio Code
-- Web browser
+- JavaScript ES Modules
+- Express.js 5
+- EJS
+- SQLite using `node:sqlite`
+- Supertest for HTTP integration testing
+- Node.js built-in test runner
 
-## Verify the Environment
+## Requirements
 
-```bash
+Install a compatible Node.js 24 release and npm 11 or later.
+
+Verify the installed versions:
+
+```powershell
 node --version
 npm --version
 git --version
-Install Dependencies
+```
+
+## Installation
+
+Clone the repository and navigate to the project directory.
+
+Install the dependencies:
+
+```powershell
 npm ci
+```
 
-Run the Application:
+## Running the Application
+
+Start the application:
+
+```powershell
 npm start
+```
 
-Development watch mode:
+Start development mode with automatic restart:
+
+```powershell
 npm run dev
+```
 
+The application uses its configured server port. Check the startup output for the local address.
 
-Run Tests:
+## Running Automated Tests
+
+Run the complete test suite:
+
+```powershell
 npm test
+```
+
+Run an individual test file:
+
+```powershell
+node --test test/<test-file-name>.test.js
+```
+
+Run tests in watch mode:
+
+```powershell
+npm run test:watch
+```
+
+Tests should use isolated database files where appropriate and clean up temporary test data after execution.
+
+## Project Organization
+
+Follow the existing application structure:
+
+- Routes define HTTP endpoint mappings.
+- Controllers handle HTTP requests and responses.
+- Services implement application and business rules.
+- Repositories handle database access.
+- Models represent domain entities.
+- Views contain EJS templates.
+- Middleware handles reusable request processing.
+- Utilities provide shared supporting functions.
+
+Avoid placing business logic directly in routes or database operations in views.
+
+## Development Guidelines
+
+1. Implement only requirements within the assigned ticket.
+2. Preserve existing functionality and established business rules.
+3. Validate user input before performing database mutations.
+4. Use parameterized SQL statements.
+5. Use POST or another appropriate mutation method for state-changing operations.
+6. Keep GET requests read-only.
+7. Maintain existing EJS output escaping.
+8. Add automated tests for new behavior and regression risks.
+9. Avoid unnecessary dependencies and architecture changes.
+10. Run the relevant tests before committing changes.
+
+## Database and Local Files
+
+The application uses SQLite for persistence.
+
+The local `data/` directory contains runtime database files and should not be committed to the repository.
+
+Do not delete or overwrite an existing local database during routine development.
+
+Use temporary database files for automated tests whenever appropriate.
+
+## Git Workflow
+
+Check the current branch and working tree:
+
+```powershell
+git branch --show-current
+git status
+```
+
+Create feature branches for assigned work:
+
+```powershell
+git switch -c feature/<ticket-name>
+```
+
+Review changes before committing:
+
+```powershell
+git diff
+git status
+```
+
+Use descriptive commit messages and follow the repository's established pull request workflow.
+
+## Final Verification
+
+Before submitting a change:
+
+- Run the relevant automated tests.
+- Run the full regression suite when required.
+- Verify the application starts successfully.
+- Check affected application pages and workflows.
+- Confirm no local database, secret, or temporary artifact is staged.
+- Review the final Git diff.
