@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Service Request Management</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/style.css"
+  >
+</head>
+
+<body>
+  <main class="management-container">
+    <header class="page-header">
+      <div>
+        <h1>Service Request Management</h1>
+
+        <p class="muted-text">
+          Submit, locate, review, and process Service Requests.
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <a
+          class="button button-primary"
+          href="/service-requests/new"
+        >
+          Submit Service Request
+        </a>
+
+        <a
+          class="button button-secondary"
+          href="/dashboard"
+        >
+          Dashboard
+        </a>
+      </div>
+    </header>
+
+    <% if (message) { %>
+      <div class="alert alert-success">
+        <%= message %>
+      </div>
+    <% } %>
+
+    <% if (errorMessage) { %>
+      <div class="alert alert-error">
+        <%= errorMessage %>
+      </div>
+    <% } %>
+
+    <section class="management-card">
+      <form
+        class="search-form"
+        method="GET"
+        action="/service-requests"
+      >
+        <div class="search-controls">
+          <div class="form-group search-input-group">
+            <label for="search">
+              Search Service Requests
+            </label>
+
+            <input
+              type="text"
+              id="search"
+              name="search"
+              value="<%= searchTerm %>"
+              placeholder="Search service type or description"
+            >
+          </div>
+
+          <div class="form-group status-filter-group">
+            <label for="status">
+              Filter by Status
+            </label>
+
+            <select id="status" name="status">
+              <option
+                value=""
+                <%= selectedStatus === "" ? "selected" : "" %>
+              >
+                All Statuses
+              </option>
+
+              <option
+                value="Pending"
+                <%= selectedStatus === "Pending" ? "selected" : "" %>
+              >
+                Pending
+              </option>
+
+              <option
+                value="In Progress"
+                <%= selectedStatus === "In Progress" ? "selected" : "" %>
+              >
+                In Progress
+              </option>
+
+              <option
+                value="Completed"
+                <%= selectedStatus === "Completed" ? "selected" : "" %>
+              >
+                Completed
+              </option>
+
+              <option
+                value="Cancelled"
+                <%= selectedStatus === "Cancelled" ? "selected" : "" %>
+              >
+                Cancelled
+              </option>
+            </select>
+          </div>
+
+          <div class="search-actions">
+            <button
+              class="button button-primary"
+              type="submit"
+            >
+              Search
+            </button>
+
+            <a
+              class="button button-secondary"
+              href="/service-requests"
+            >
+              Clear
+            </a>
+          </div>
+        </div>
+      </form>
+
+      <div class="table-wrapper">
+        <table>
+            <thead>
+                    <tr>
+                    <th>Request ID</th>
+                    <th>Resident ID</th>
+                    <th>Service Type</th>
+                    <th>Description</th>
+                    <th>Date Requested</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+          <tbody>
+            <% if (serviceRequests.length === 0) { %>
+              <tr>
+                <td colspan="6" class="empty-message">
+                  No Service Requests found.
+                </td>
+              </tr>
+            <% } else { %>
+              <% serviceRequests.forEach((serviceRequest) => { %>
+                <tr>
+                  <td><%= serviceRequest.id %></td>
+
+                  <td><%= serviceRequest.residentId %></td>
+
+                  <td>
+                    <%= serviceRequest.serviceType %>
+                  </td>
+
+                  <td>
+                    <%= serviceRequest.dateRequested %>
+                  </td>
+
+                  <td>
+                    <span class="status-badge <%= serviceRequest.status.toLowerCase().replace(/\s+/g, '-') %>">
+                      <%= serviceRequest.status %>
+                    </span>
+                  </td>
+
+                  <td>
+                    <%= serviceRequest.description %>
+                  </td>
+
+                  <td>
+                    <div class="action-buttons">
+                      <a
+                        class="button button-secondary button-small"
+                        href="/service-requests/<%= serviceRequest.id %>"
+                      >
+                        View
+                      </a>
+
+                      <% if (serviceRequest.status === "Pending") { %>
+                        <form
+                          method="POST"
+                          action="/service-requests/<%= serviceRequest.id %>/start"
+                        >
+                          <button
+                            class="button button-primary button-small"
+                            type="submit"
+                          >
+                            Start Processing
+                          </button>
+                        </form>
+
+                        <form
+                          method="POST"
+                          action="/service-requests/<%= serviceRequest.id %>/cancel"
+                        >
+                          <button
+                            class="button button-danger button-small"
+                            type="submit"
+                          >
+                            Cancel
+                          </button>
+                        </form>
+
+                      <% } else if (serviceRequest.status === "In Progress") { %>
+                        <form
+                          method="POST"
+                          action="/service-requests/<%= serviceRequest.id %>/complete"
+                        >
+                          <button
+                            class="button button-primary button-small"
+                            type="submit"
+                          >
+                            Complete
+                          </button>
+                        </form>
+
+                        <form
+                          method="POST"
+                          action="/service-requests/<%= serviceRequest.id %>/cancel"
+                        >
+                          <button
+                            class="button button-danger button-small"
+                            type="submit"
+                          >
+                            Cancel
+                          </button>
+                        </form>
+
+                      <% } else { %>
+                        <span class="muted-text">
+                          No actions available
+                        </span>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="record-count">
+        Total Service Requests: <%= serviceRequests.length %>
+      </p>
+    </section>
+
+    <p>
+      <a class="back-link" href="/residents">
+        Open Resident Management
+      </a>
+    </p>
+
+    <p>
+      <a class="back-link" href="/">
+        Back to Home
+      </a>
+    </p>
+  </main>
+</body>
+</html>

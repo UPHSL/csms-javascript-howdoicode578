@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Resident - CSMS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <main class="form-container">
+    <section class="card">
+      <p class="label">Resident Management</p>
+      <h1>Register Resident</h1>
+      <p class="message">Enter the resident's information below.</p>
+
+      <% if (errorMessage) { %>
+        <div class="alert alert-error"><%= errorMessage %></div>
+      <% } %>
+
+      <form action="/residents" method="POST" class="resident-form">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input id="firstName" name="firstName" type="text" required
+            value="<%= resident.firstName ?? '' %>">
+          <% if (errors.includes("firstName")) { %>
+            <small class="field-error">First name is required.</small>
+          <% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input id="lastName" name="lastName" type="text" required
+            value="<%= resident.lastName ?? '' %>">
+          <% if (errors.includes("lastName")) { %>
+            <small class="field-error">Last name is required.</small>
+          <% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <input id="address" name="address" type="text" required
+            value="<%= resident.address ?? '' %>">
+          <% if (errors.includes("address")) { %>
+            <small class="field-error">Address is required.</small>
+          <% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="contactNumber">Contact Number</label>
+          <input id="contactNumber" name="contactNumber" type="tel"
+            placeholder="09XXXXXXXXX" required
+            value="<%= resident.contactNumber ?? '' %>">
+          <% if (errors.includes("contactNumber")) { %>
+            <small class="field-error">Enter a valid 11-digit Philippine mobile number starting with 09.</small>
+          <% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input id="email" name="email" type="email" required
+            value="<%= resident.email ?? '' %>">
+          <% if (errors.includes("email")) { %>
+            <small class="field-error">Enter a valid email address.</small>
+          <% } %>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="button button-primary">
+            Register Resident
+          </button>
+
+          <a href="/residents" class="button button-secondary">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

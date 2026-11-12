@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resident Management - CSMS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <main class="management-container">
+    <header class="page-header">
+      <div>
+        <p class="label">Community Services Management System</p>
+        <h1>Resident Management</h1>
+        <p class="message">Manage registered community residents.</p>
+      </div>
+
+      <div class="header-actions">
+        <a class="button button-secondary" href="/dashboard">
+          Dashboard
+        </a>
+
+        <a class="button button-primary" href="/residents/new">
+          Register Resident
+        </a>
+      </div>
+    </header>
+
+    <% if (message) { %>
+      <div class="alert alert-success"><%= message %></div>
+    <% } %>
+
+    <section class="card management-card">
+      <form action="/residents" method="GET" class="search-form">
+        <label for="search">Search Residents</label>
+
+        <div class="search-controls">
+          <input
+            type="text"
+            id="search"
+            name="search"
+            value="<%= searchTerm %>"
+            placeholder="Enter first name or last name"
+          >
+
+          <button type="submit" class="button button-primary">
+            Search
+          </button>
+
+          <a href="/residents" class="button button-secondary">
+            Clear
+          </a>
+        </div>
+      </form>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Resident Name</th>
+              <th>Address</th>
+              <th>Contact Number</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% if (residents.length === 0) { %>
+              <tr>
+                <td colspan="7" class="empty-message">
+                  No Residents found
+                </td>
+              </tr>
+            <% } else { %>
+
+              <% residents.forEach(function(resident) { %>
+                <tr>
+                  <td><%= resident.id %></td>
+
+                  <td>
+                    <%= resident.firstName %>
+                    <%= resident.lastName %>
+                  </td>
+
+                  <td><%= resident.address %></td>
+                  <td><%= resident.contactNumber %></td>
+                  <td><%= resident.email %></td>
+
+                  <td>
+                    <span class="status-badge <%= resident.status === 'Active' ? 'active' : 'inactive' %>">
+                      <%= resident.status %>
+                    </span>
+                  </td>
+
+                  <td>
+                    <div class="action-buttons">
+                      <a
+                        class="button button-small button-secondary"
+                        href="/residents/<%= resident.id %>/edit"
+                      >
+                        Edit
+                      </a>
+
+                      <% if (resident.status === "Active") { %>
+                        <form
+                          action="/residents/<%= resident.id %>/deactivate"
+                          method="POST"
+                          onsubmit="return confirm('Are you sure you want to deactivate this resident?');"
+                        >
+                          <button
+                            type="submit"
+                            class="button button-small button-danger"
+                          >
+                            Deactivate
+                          </button>
+                        </form>
+                      <% } else { %>
+                        <span class="muted-text">Unavailable</span>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="record-count">
+        Total residents displayed:
+        <strong><%= residents.length %></strong>
+      </p>
+    </section>
+
+    <a href="/" class="back-link">Back to Home</a>
+  </main>
+</body>
+</html>

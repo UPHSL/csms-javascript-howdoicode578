@@ -2,9 +2,13 @@
  * Shared CSMS application and server configuration.
  */
 
+import packageJson from "../../package.json" with {
+  type: "json"
+};
+
 export const applicationConfig = Object.freeze({
   name: "Community Services Management System",
-  version: "0.1.0",
+  version: packageJson.version,
   currentSprint: "Sprint 0 - Developer Onboarding",
   technology: "JavaScript with Express.js"
 });
